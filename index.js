@@ -1,10 +1,10 @@
 'use strict';
 
-function doEval(self, script) {
+function doEval(self, __pseudoworker_script) {
   /* jshint unused:false */
   (function () {
     /* jshint evil:true */
-    eval(script);
+    eval(__pseudoworker_script);
   }).call(window);
 }
 
