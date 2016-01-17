@@ -49,19 +49,10 @@ if (typeof window.Worker === 'undefined') {
 Supported APIS
 ----
 
-### Outside the worker
-
-* `worker.onmessage`
-* `worker.onerror`
-* `worker.addEventListener` 
-* `worker.postMessage`
-
-### Inside the worker
-
-* `self.onmessage`
-* `self.onerror`
-* `self.addEventListener`
-* `self.postMessage`
+* `onmessage`
+* `onerror`
+* `addEventListener`
+* `postMessage`
 
 **Note:** inside the worker, you _must_ use the `self` variable instead 
 of the implicit global object. I.e. do this:
