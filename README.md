@@ -1,4 +1,4 @@
-pseudo-worker
+pseudo-worker [![Build Status](https://travis-ci.org/nolanlawson/pseudo-worker.svg?branch=master)](https://travis-ci.org/nolanlawson/pseudo-worker) [![Coverage Status](https://coveralls.io/repos/nolanlawson/pseudo-worker/badge.svg?branch=master&service=github)](https://coveralls.io/github/nolanlawson/pseudo-worker?branch=master)
 ====
 
 A tiny and mostly spec-compliant [WebWorker](https://www.w3.org/TR/workers/) polyfill, 
@@ -20,14 +20,10 @@ Install
 Usage
 ----
 
-### Via Browserify/Webpack
-
 ```js
 var PseudoWorker = require('pseudo-worker');
 
-var worker = typeof WebWorker !== 'undefined' ?
-  new Worker('script.js') :
-  new PseudoWorker('script.js');
+var worker = new PseudoWorker('script.js');
 ```
 
 Or as a polyfill:
@@ -37,9 +33,7 @@ require('pseudo-worker/polyfill');
 // now window.Worker is polyfilled in older browsers
 ```
 
-### Via script tags
-
-Or if you aren't using Browserify or Webpack, download it from [wzrd.in](http://wzrd.in/):
+Instead of Browserify/Webpack, you can also use it directly as a script tag by [downloading it from wzrd.in](https://wzrd.in/standalone/pseudo-worker):
 
 ```html
 <script src="https://wzrd.in/standalone/pseudo-worker"></script>

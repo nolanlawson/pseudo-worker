@@ -13,7 +13,7 @@ var implementations = ['pseudo-worker'];
 // early, and I need some standard to code to.
 if (process.browser) {
   var ua = uaParser(navigator.userAgent);
-  if (ua.browser.name === 'Chrome') {
+  if (ua.browser.name === 'Chrome' && ua.os.name !== 'Android') {
     implementations.push('worker');
   }
 } else {
