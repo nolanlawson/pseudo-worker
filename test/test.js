@@ -31,7 +31,7 @@ implementations.forEach(function (workerType) {
 
   describe(workerType + ': listener style', function () {
 
-    this.timeout(5000);
+    this.timeout(20000);
 
     function workerPromise(script, toSend) {
       return Promise.resolve().then(function () {
@@ -242,7 +242,7 @@ implementations.forEach(function (workerType) {
 
   describe(workerType + ': onmessage style', function () {
 
-    this.timeout(5000);
+    this.timeout(20000);
 
     function workerPromise(script, toSend) {
       return Promise.resolve().then(function () {
