@@ -4,7 +4,7 @@
   "description": "Mostly spec-compliant WebWorker implementation and polyfill.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "zuul ./test/test.js",
+    "test": "npm run lint && zuul ./test/test.js",
     "test-local": "zuul --local 9000 --no-coverage ./test/test.js",
     "lint": "jshint -c .jshintrc *.js"
   },

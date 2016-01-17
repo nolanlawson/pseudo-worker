@@ -9,6 +9,8 @@ var PseudoWorker = require('../lib');
 
   describe(workerType + ' test suite', function () {
 
+    this.timeout(10000);
+
     function workerPromise(script, toSend) {
       var worker;
       return Promise.resolve().then(function () {
@@ -38,6 +40,7 @@ var PseudoWorker = require('../lib');
       return workerPromise('test/404.js', {}).then(function () {
         throw new Error('expected an error');
       }, function (e) {
+        should.exist(e);
         e.type.should.equal('error');
       });
     });
