@@ -74,10 +74,10 @@ The full list of browsers that are tested in CI are in [.zuul.yml](https://githu
 
 * Chrome
 * Firefox
-* Safari 8+
-* IE 10+
-* iOS 7.1+
-* Android 4.4+
+* Safari 7+
+* IE 9+
+* iOS 7.0+
+* Android 4.0+
 
 Node.js is not supported. Check out [node-webworker](https://github.com/pgriess/node-webworker) instead.
 
