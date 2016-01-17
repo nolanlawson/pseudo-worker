@@ -1,0 +1,21 @@
+{
+  "name": "pseudoworker",
+  "version": "1.0.0",
+  "description": "Mostly spec-compliant WebWorker implementation and polyfill.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "zuul ./test/test.js",
+    "test-local": "zuul --local 9000 --no-coverage ./test/test.js",
+    "lint": "jshint -c .jshintrc *.js"
+  },
+  "keywords": [],
+  "author": "Nolan Lawson <nolan@nolanlawson.com>",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "jshint": "^2.9.1",
+    "mocha": "^2.3.4",
+    "pouchdb-promise": "0.0.0",
+    "zuul": "^3.9.0"
+  }
+}
