@@ -15,7 +15,7 @@ The bundle size is very small:
 Install
 -----
 
-npm install pseudoworker
+    npm install pseudoworker
 
 Usage
 ----
