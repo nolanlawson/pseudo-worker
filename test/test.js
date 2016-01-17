@@ -3,9 +3,9 @@
 var should = require('chai').should();
 var Promise = require('pouchdb-promise');
 
-var PseudoWorker = require('../lib');
+var PseudoWorker = require('../');
 
-['pseudoworker', 'worker'].forEach(function (workerType) {
+['pseudo-worker', 'worker'].forEach(function (workerType) {
 
   describe(workerType + ' test suite', function () {
 

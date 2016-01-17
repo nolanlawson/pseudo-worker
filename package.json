@@ -1,13 +1,14 @@
 {
-  "name": "pseudoworker",
+  "name": "pseudo-worker",
   "version": "1.0.0",
   "description": "Mostly spec-compliant WebWorker implementation and polyfill.",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "npm run lint && zuul ./test/test.js",
     "test-local": "zuul --local 9000 --no-coverage ./test/test.js",
     "lint": "jshint -c .jshintrc *.js"
   },
+  "files": [],
   "keywords": [],
   "author": "Nolan Lawson <nolan@nolanlawson.com>",
   "license": "Apache-2.0",
