@@ -5,7 +5,7 @@ function doEval(self, __pseudoworker_script) {
   (function () {
     /* jshint evil:true */
     eval(__pseudoworker_script);
-  }).call(window);
+  }).call(global);
 }
 
 function PseudoWorker(path) {
@@ -124,7 +124,7 @@ function PseudoWorker(path) {
         script = xhr.responseText;
         onLoad();
       } else {
-        postError(new Error('cannot find script ' + script));
+        postError(new Error('cannot find script ' + path));
       }
     };
     xhr.send();

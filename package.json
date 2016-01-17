@@ -1,13 +1,16 @@
 {
   "name": "pseudo-worker",
   "version": "1.0.0",
-  "description": "Mostly spec-compliant WebWorker implementation and polyfill.",
+  "description": "Tiny and mostly spec-compliant WebWorker polyfill",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint && zuul ./test/test.js",
+    "test": "mocha ./test/test.js",
+    "test-browser": "zuul ./test/test.js",
     "test-local": "zuul ./test/test.js --local 9000 --no-coverage",
     "test-phantom": "zuul ./test/test.js --phantom --no-coverage",
-    "lint": "jshint -c .jshintrc *.js"
+    "lint": "jshint -c .jshintrc *.js",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha ./test/test.js && istanbul check-coverage --lines 100 --function 100 --statements 100 --branches 100",
+    "report-coverage": "npm run coverage && istanbul-coveralls"
   },
   "files": [
     "polyfill.js"
@@ -17,11 +20,17 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "chai": "^3.4.1",
+    "istanbul": "^0.4.2",
+    "istanbul-coveralls": "^1.0.3",
     "jshint": "^2.9.1",
     "mocha": "^2.3.4",
     "phantomjs": "^1.9.19",
     "pouchdb-promise": "0.0.0",
     "ua-parser-js": "^0.7.10",
     "zuul": "^3.9.0"
+  },
+  "browser": {
+    "path": false,
+    "fs": false
   }
 }

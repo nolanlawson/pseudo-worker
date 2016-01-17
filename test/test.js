@@ -11,9 +11,14 @@ var implementations = ['pseudo-worker'];
 // Not testing WebWorkers in any implementation other than Blink.
 // Firefox's seems to have weird edge cases causing Mocha to error out
 // early, and I need some standard to code to.
-var ua = uaParser(navigator.userAgent);
-if (ua.browser.name === 'Chrome') {
-  implementations.push('worker');
+if (process.browser) {
+  var ua = uaParser(navigator.userAgent);
+  if (ua.browser.name === 'Chrome') {
+    implementations.push('worker');
+  }
+} else {
+  // Shim for XHR in order to test in Node (nice for coverage reports)
+  global.XMLHttpRequest = require('./xhr-shim');
 }
 
 // Test both the worker and pseudoworker to ensure equivalent implementations.
