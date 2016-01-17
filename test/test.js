@@ -2,16 +2,17 @@
 
 var should = require('chai').should();
 var Promise = require('pouchdb-promise');
-var ua = require('ua-parser-js')(window.navigator.userAgent);
+var uaParser = require('ua-parser-js');
 
 var PseudoWorker = require('../');
 
 var implementations = ['pseudo-worker'];
 
-// Not testing WebWorkers in any implementation other than WebKit/Blink.
+// Not testing WebWorkers in any implementation other than Blink.
 // Firefox's seems to have weird edge cases causing Mocha to error out
 // early, and I need some standard to code to.
-if (ua.browser.name === 'Chrome' || ua.browser.name === 'Safari') {
+var ua = uaParser(navigator.userAgent);
+if (ua.browser.name === 'Chrome') {
   implementations.push('worker');
 }
 

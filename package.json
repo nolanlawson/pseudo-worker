@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run lint && zuul ./test/test.js",
-    "test-local": "zuul --local 9000 --no-coverage ./test/test.js",
+    "test-local": "zuul ./test/test.js --local 9000 --no-coverage",
+    "test-phantom": "zuul ./test/test.js --phantom --no-coverage",
     "lint": "jshint -c .jshintrc *.js"
   },
   "files": [
