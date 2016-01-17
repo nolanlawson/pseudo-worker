@@ -1,5 +1,15 @@
 'use strict';
 
+function callErrorListener(err) {
+  return function (listener) {
+    listener({
+      type: 'error',
+      error: err,
+      message: err.message
+    });
+  };
+}
+
 function PseudoWorker(script) {
   this.__messageListeners = [];
   this.__errorListeners = [];
@@ -16,6 +26,7 @@ function PseudoWorker(script) {
       that.__scriptData = data;
       var self = {
         __messageListeners: [],
+        __errorListeners: [],
         postMessage: function (msg) {
           that.__messageListeners.forEach(function(listener) {
             listener({
@@ -24,8 +35,11 @@ function PseudoWorker(script) {
           });
         },
         addEventListener: function (type, fun) {
+          /* istanbul ignore else */
           if (type === 'message') {
             self.__messageListeners.push(fun);
+          } else if (type === 'error') {
+            self.__errorListeners.push(fun);
           }
         }
       };
@@ -47,6 +61,7 @@ function PseudoWorker(script) {
 
 PseudoWorker.prototype.addEventListener = function(type, fun) {
   var that = this;
+  /* istanbul ignore else */
   if (type === 'message') {
     that.__messageListeners.push(fun);
   } else if (type === 'error') {
@@ -87,14 +102,12 @@ PseudoWorker.prototype.__runPostMessage = function (msg) {
 };
 
 PseudoWorker.prototype.__postError = function (err) {
-  var that = this;
-  that.__errorListeners.forEach(function (listener) {
-    listener({
-      type: 'error',
-      error: err,
-      message: err.message
-    });
-  });
+  var fun = callErrorListener(err);
+
+  this.__errorListeners.forEach(fun);
+  if (this.__workerSelf) {
+    this.__workerSelf.__errorListeners.forEach(fun);
+  }
 };
 
 module.exports = PseudoWorker;

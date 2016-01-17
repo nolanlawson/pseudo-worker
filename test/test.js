@@ -139,7 +139,7 @@ implementations.forEach(function (workerType) {
           if (count === 1) {
             worker.terminate();
             worker.postMessage({});
-            setTimeout(resolve, 2000); // prove a negative
+            setTimeout(resolve, 1000); // prove a negative
           } else {
             reject();
           }
@@ -148,6 +148,84 @@ implementations.forEach(function (workerType) {
           reject(err);
         });
         worker.postMessage({});
+      });
+    });
+
+    it('error listener inside worker itself', function () {
+      var worker = createWorker('test/error-listener-worker.js');
+      return new Promise(function (resolve) {
+
+        var count = 0;
+
+        function checkDone() {
+          if (++count === 2) {
+            resolve();
+          }
+        }
+
+        worker.addEventListener('message', function (e) {
+          e.data.error.should.equal(true);
+          checkDone();
+        });
+
+        worker.addEventListener('error', function (err) {
+          should.exist(err);
+          err.type.should.equal('error');
+          err.message.should.be.a('string');
+          checkDone();
+        });
+
+        worker.postMessage({});
+      }).then(function () {
+        worker.terminate();
+      });
+    });
+
+    it('multiple listeners', function () {
+      var worker = createWorker('test/echo-worker.js');
+      return new Promise(function (resolve) {
+
+        var count = 0;
+
+        function checkDone() {
+          if (++count === 2) {
+            resolve();
+          }
+        }
+
+        worker.addEventListener('message', function () {
+          checkDone();
+        });
+
+        worker.addEventListener('message', function () {
+          checkDone();
+        });
+
+        worker.postMessage({});
+      }).then(function () {
+        worker.terminate();
+      });
+    });
+
+    it('multiple listeners in worker', function () {
+      var worker = createWorker('test/echo-twice-worker.js');
+      return new Promise(function (resolve) {
+
+        var count = 0;
+
+        function checkDone() {
+          if (++count === 2) {
+            resolve();
+          }
+        }
+
+        worker.addEventListener('message', function () {
+          checkDone();
+        });
+
+        worker.postMessage({});
+      }).then(function () {
+        worker.terminate();
       });
     });
 
