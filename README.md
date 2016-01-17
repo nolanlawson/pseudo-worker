@@ -20,6 +20,8 @@ Install
 Usage
 ----
 
+## Via Browserify/Webpack
+
 ```js
 var PseudoWorker = require('pseudoworker');
 
@@ -32,5 +34,21 @@ Or as a polyfill:
 
 ```js
 require('pseudoworker/polyfill');
-// now window.WebWorker is the polyfill in older browsers
+// now window.Worker is polyfilled in older browsers
+```
+
+## Via script tags
+
+Or if you aren't using Browserify or Webpack, download it from [wzrd.in](http://wzrd.in/):
+
+```html
+<script src="https://wzrd.in/standalone/pseudo-worker"></script>
+```
+
+Then it's available as `window.PseudoWorker`. To use it as a polyfill, it's just:
+
+```js
+if (typeof window.Worker === 'undefined') {
+  window.Worker = window.PseudoWorker;
+}
 ```

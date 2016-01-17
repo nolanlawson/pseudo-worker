@@ -56,6 +56,13 @@ PseudoWorker.prototype.addEventListener = function(type, fun) {
 
 PseudoWorker.prototype.postMessage = function(msg) {
   var that = this;
+
+  if (typeof msg === 'undefined') {
+    throw new Error('postMessage() requires an argument');
+  }
+  if (that.__terminated) {
+    return;
+  }
   if (!that.__scriptData) {
     that.__postMessageListeners.push(msg);
     return;
