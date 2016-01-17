@@ -16,6 +16,9 @@ function PseudoWorker(path) {
   var postMessageListeners = [];
   var terminated = false;
   var script;
+  var workerSelf;
+
+  var api = this;
 
   function callErrorListener(err) {
     return function (listener) {
@@ -37,19 +40,30 @@ function PseudoWorker(path) {
   }
 
   function postError(err) {
-    var fun = callErrorListener(err);
-    errorListeners.forEach(fun);
-    workerErrorListeners.forEach(fun);
+    var callFun = callErrorListener(err);
+    if (typeof api.onerror === 'function') {
+      callFun(api.onerror);
+    }
+    if (workerSelf && typeof workerSelf.onerror === 'function') {
+      callFun(workerSelf.onerror);
+    }
+    errorListeners.forEach(callFun);
+    workerErrorListeners.forEach(callFun);
   }
 
   function runPostMessage(msg) {
-    workerMessageListeners.forEach(function (listener) {
+    function callFun(listener) {
       try {
         listener({data: msg});
       } catch (err) {
         postError(err);
       }
-    });
+    }
+
+    if (workerSelf && typeof workerSelf.onmessage === 'function') {
+      callFun(workerSelf.onmessage);
+    }
+    workerMessageListeners.forEach(callFun);
   }
 
   function postMessage(msg) {
@@ -71,11 +85,15 @@ function PseudoWorker(path) {
   }
 
   function workerPostMessage(msg) {
-    messageListeners.forEach(function(listener) {
+    function callFun(listener) {
       listener({
         data: msg
       });
-    });
+    }
+    if (typeof api.onmessage === 'function') {
+      callFun(api.onmessage);
+    }
+    messageListeners.forEach(callFun);
   }
 
   function workerAddEventListener(type, fun) {
@@ -88,11 +106,11 @@ function PseudoWorker(path) {
   }
 
   function onLoad() {
-    var self = {
+    workerSelf = {
       postMessage: workerPostMessage,
       addEventListener: workerAddEventListener,
     };
-    doEval(self, script);
+    doEval(workerSelf, script);
     while (postMessageListeners.length) {
       runPostMessage(postMessageListeners.pop());
     }
@@ -114,11 +132,11 @@ function PseudoWorker(path) {
 
   doXHR();
 
-  this.postMessage = postMessage;
-  this.addEventListener = addEventListener;
-  this.terminate = terminate;
+  api.postMessage = postMessage;
+  api.addEventListener = addEventListener;
+  api.terminate = terminate;
 
-  return this;
+  return api;
 }
 
 module.exports = PseudoWorker;
