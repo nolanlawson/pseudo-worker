@@ -22,7 +22,6 @@ Usage
 
 ```js
 var PseudoWorker = require('pseudo-worker');
-
 var worker = new PseudoWorker('script.js');
 ```
 
@@ -76,6 +75,20 @@ Not this:
 ```js
 onmessage = ...
 ```
+
+Supported browsers
+---
+
+The full list of browsers that are tested in CI are in [.zuul.yml](https://github.com/nolanlawson/pseudo-worker/blob/master/.zuul.yml). But basically:
+
+* Chrome
+* Firefox
+* Safari 8+
+* IE 10+
+* iOS 7.1+
+* Android 4.4+
+
+Node.js is not supported. Check out [node-webworker](https://github.com/pgriess/node-webworker) instead.
 
 Testing the library
 ---
