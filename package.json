@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Tiny and mostly spec-compliant WebWorker polyfill",
   "main": "index.js",
+  "repository": "https://github.com/nolanlawson/pseudo-worker.git",
   "scripts": {
     "test": "mocha ./test/test.js",
     "test-browser": "zuul ./test/test.js",
