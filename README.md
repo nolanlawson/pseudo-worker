@@ -10,8 +10,7 @@ This runs on the main thread, so you don't get any of the multithreading
 benefits of WebWorkers. However, it should be "good enough" for the
 less-compliant browsers.
 
-The bundle size is very small: **947 bytes** after uglify+gzip!
-
+The bundle size is very small: **964 bytes** after uglify+gzip!
 Install
 -----
 
