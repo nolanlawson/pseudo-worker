@@ -4,7 +4,7 @@ pseudo-worker [![Build Status](https://travis-ci.org/nolanlawson/pseudo-worker.s
 A tiny and mostly spec-compliant [WebWorker](https://www.w3.org/TR/workers/) polyfill, 
 designed for [browsers that don't support WebWorkers](http://caniuse.com/#feat=webworkers), 
 or for browsers that don't support certain features of WebWorkers (e.g. 
-IndexedDB in Safari).
+[IndexedDB in Safari](https://bugs.webkit.org/show_bug.cgi?id=149953)).
 
 This runs on the main thread, so you don't get any of the multithreading
 benefits of WebWorkers. However, it should be "good enough" for the
