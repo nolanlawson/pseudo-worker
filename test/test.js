@@ -1,6 +1,6 @@
 'use strict';
 
-var should = require('chai').should();
+var assert = require('assert');
 var Promise = require('pouchdb-promise');
 var uaParser = require('ua-parser-js');
 
@@ -21,8 +21,17 @@ if (process.browser) {
   global.XMLHttpRequest = require('./xhr-shim');
 }
 
+// because IE8 support
+function each(arr, fun) {
+  var i = -1;
+  var len = arr.length;
+  while (++i < len) {
+    fun(arr[i]);
+  }
+}
+
 // Test both the worker and pseudoworker to ensure equivalent implementations.
-implementations.forEach(function (workerType) {
+each(implementations, function (workerType) {
 
   function createWorker(script) {
     return workerType === 'worker' ?
@@ -54,7 +63,7 @@ implementations.forEach(function (workerType) {
     it('test basic', function () {
       var workerScript = 'test/listener-style/basic-worker.js';
       return workerPromise(workerScript, {}).then(function (data) {
-        data.hello.should.equal('world');
+        assert.equal(data.hello, 'world');
       });
     });
 
@@ -63,8 +72,8 @@ implementations.forEach(function (workerType) {
       return workerPromise(workerScript, {}).then(function () {
         throw new Error('expected an error');
       }, function (e) {
-        should.exist(e);
-        e.type.should.equal('error');
+        assert(e);
+        assert.equal(e.type, 'error');
       });
     });
 
@@ -72,7 +81,7 @@ implementations.forEach(function (workerType) {
       var obj = {hello: {world: 'yo'}};
       var workerScript = 'test/listener-style/echo-worker.js';
       return workerPromise(workerScript, obj).then(function (data) {
-        data.should.deep.equal(obj);
+        assert.deepEqual(data, obj);
       });
     });
 
@@ -81,8 +90,8 @@ implementations.forEach(function (workerType) {
       return workerPromise(workerScript, null).then(function () {
         throw new Error('expected an error');
       }, function (e) {
-        e.type.should.equal('error');
-        e.message.should.be.a('string');
+        assert.equal(e.type, 'error');
+        assert.equal(typeof e.message, 'string');
       });
     });
 
@@ -93,7 +102,7 @@ implementations.forEach(function (workerType) {
       }).then(function () {
         throw new Error('expected an error');
       }, function (e) {
-        should.exist(e);
+        assert(e);
         worker.terminate();
       });
     });
@@ -174,14 +183,14 @@ implementations.forEach(function (workerType) {
         }
 
         worker.addEventListener('message', function (e) {
-          e.data.error.should.equal(true);
+          assert.equal(e.data.error, true);
           checkDone();
         });
 
         worker.addEventListener('error', function (err) {
-          should.exist(err);
-          err.type.should.equal('error');
-          err.message.should.be.a('string');
+          assert(err);
+          assert.equal(err.type, 'error');
+          assert.equal(typeof err.message, 'string');
           checkDone();
         });
 
@@ -265,7 +274,7 @@ implementations.forEach(function (workerType) {
     it('test basic', function () {
       var workerScript = 'test/onmessage-style/basic-worker.js';
       return workerPromise(workerScript, {}).then(function (data) {
-        data.hello.should.equal('world');
+        assert.equal(data.hello, 'world');
       });
     });
 
@@ -274,8 +283,8 @@ implementations.forEach(function (workerType) {
       return workerPromise(workerScript, {}).then(function () {
         throw new Error('expected an error');
       }, function (e) {
-        should.exist(e);
-        e.type.should.equal('error');
+        assert(e);
+        assert.equal(e.type, 'error');
       });
     });
 
@@ -283,7 +292,7 @@ implementations.forEach(function (workerType) {
       var obj = {hello: {world: 'yo'}};
       var workerScript = 'test/onmessage-style/echo-worker.js';
       return workerPromise(workerScript, obj).then(function (data) {
-        data.should.deep.equal(obj);
+        assert.deepEqual(data, obj);
       });
     });
 
@@ -292,8 +301,8 @@ implementations.forEach(function (workerType) {
       return workerPromise(workerScript, null).then(function () {
         throw new Error('expected an error');
       }, function (e) {
-        e.type.should.equal('error');
-        e.message.should.be.a('string');
+        assert.equal(e.type, 'error');
+        assert.equal(typeof e.message, 'string');
       });
     });
 
@@ -375,14 +384,14 @@ implementations.forEach(function (workerType) {
         }
 
         worker.onmessage = function (e) {
-          e.data.error.should.equal(true);
+          assert.equal(e.data.error, true);
           checkDone();
         };
 
         worker.onerror = function (err) {
-          should.exist(err);
-          err.type.should.equal('error');
-          err.message.should.be.a('string');
+          assert(err);
+          assert.equal(err.type, 'error');
+          assert.equal(typeof err.message, 'string');
           checkDone();
         };
 

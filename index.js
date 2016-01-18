@@ -20,6 +20,15 @@ function PseudoWorker(path) {
 
   var api = this;
 
+  // because IE8 support
+  function forEach(arr, fun) {
+    var i = -1;
+    var len = arr.length;
+    while (++i < len) {
+      fun(arr[i]);
+    }
+  }
+
   function callErrorListener(err) {
     return function (listener) {
       listener({
@@ -47,8 +56,8 @@ function PseudoWorker(path) {
     if (workerSelf && typeof workerSelf.onerror === 'function') {
       callFun(workerSelf.onerror);
     }
-    errorListeners.forEach(callFun);
-    workerErrorListeners.forEach(callFun);
+    forEach(errorListeners, callFun);
+    forEach(workerErrorListeners, callFun);
   }
 
   function runPostMessage(msg) {
@@ -63,7 +72,7 @@ function PseudoWorker(path) {
     if (workerSelf && typeof workerSelf.onmessage === 'function') {
       callFun(workerSelf.onmessage);
     }
-    workerMessageListeners.forEach(callFun);
+    forEach(workerMessageListeners, callFun);
   }
 
   function postMessage(msg) {
@@ -93,7 +102,7 @@ function PseudoWorker(path) {
     if (typeof api.onmessage === 'function') {
       callFun(api.onmessage);
     }
-    messageListeners.forEach(callFun);
+    forEach(messageListeners, callFun);
   }
 
   function workerAddEventListener(type, fun) {
@@ -105,32 +114,26 @@ function PseudoWorker(path) {
     }
   }
 
-  function onLoad() {
-    workerSelf = {
-      postMessage: workerPostMessage,
-      addEventListener: workerAddEventListener,
-    };
-    doEval(workerSelf, script);
-    while (postMessageListeners.length) {
-      runPostMessage(postMessageListeners.pop());
-    }
-  }
+  var xhr = new XMLHttpRequest();
 
-  function doXHR() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', path, true);
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 400) {
-        script = xhr.responseText;
-        onLoad();
-      } else {
-        postError(new Error('cannot find script ' + path));
+  xhr.open('GET', path, true);
+  xhr.onload = function () {
+    if (xhr.status >= 200 && xhr.status < 400) {
+      script = xhr.responseText;
+      workerSelf = {
+        postMessage: workerPostMessage,
+        addEventListener: workerAddEventListener,
+      };
+      doEval(workerSelf, script);
+      while (postMessageListeners.length) {
+        runPostMessage(postMessageListeners.pop());
       }
-    };
-    xhr.send();
-  }
+    } else {
+      postError(new Error('cannot find script ' + path));
+    }
+  };
 
-  doXHR();
+  xhr.send();
 
   api.postMessage = postMessage;
   api.addEventListener = addEventListener;
