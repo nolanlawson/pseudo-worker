@@ -75,7 +75,7 @@ The full list of browsers that are tested in CI are in [.zuul.yml](https://githu
 * Chrome
 * Firefox
 * Safari 7+
-* IE 9+
+* IE 8+
 * iOS 7.0+
 * Android 4.0+
 
