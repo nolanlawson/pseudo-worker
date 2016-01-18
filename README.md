@@ -38,11 +38,11 @@ Instead of Browserify/Webpack, you can also use it directly as a script tag by [
 <script src="https://wzrd.in/standalone/pseudo-worker"></script>
 ```
 
-Then it's available as `window.PseudoWorker`. To use it as a polyfill, just do:
+Then it's available as `window.pseudoWorker`. To use it as a polyfill, just do:
 
 ```js
 if (typeof window.Worker === 'undefined') {
-  window.Worker = window.PseudoWorker;
+  window.Worker = window.pseudoWorker;
 }
 ```
 
