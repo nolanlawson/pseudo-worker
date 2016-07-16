@@ -11,8 +11,8 @@ browsers:
   - name: microsoftedge
     version: 13..latest
   - name: iphone
-    version: [7.0, 8.4, 9.1..latest]
+    version: [7.0, 8.4, 9.2]
   - name: ipad
-    version: [7.0, 8.4, 9.1..latest]
+    version: [7.0, 8.4, 9.2]
   - name: android
     version: 4.0..latest
