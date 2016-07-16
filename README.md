@@ -10,7 +10,8 @@ This runs on the main thread, so you don't get any of the multithreading
 benefits of WebWorkers. However, it should be "good enough" for the
 less-compliant browsers.
 
-The bundle size is very small: **964 bytes** after uglify+gzip!
+The bundle size is very small: **1kB** after uglify+gzip!
+
 Install
 -----
 
@@ -31,18 +32,16 @@ require('pseudo-worker/polyfill');
 // now window.Worker is polyfilled in older browsers
 ```
 
-Instead of Browserify/Webpack, you can also use it directly as a script tag by [downloading it from wzrd.in](https://wzrd.in/standalone/pseudo-worker):
+Instead of Browserify/Webpack, you can also use it directly as a script tag:
 
 ```html
-<script src="https://wzrd.in/standalone/pseudo-worker"></script>
+<script src="https://npmcdn.com/pseudo-worker/dist/pseudo-worker.js"></script>
 ```
 
-Then it's available as `window.pseudoWorker`. To use it as a polyfill, just do:
+Then it's available as `window.PseudoWorker`. Or for the polyfill:
 
-```js
-if (typeof window.Worker === 'undefined') {
-  window.Worker = window.pseudoWorker;
-}
+```html
+<script src="https://npmcdn.com/pseudo-worker/dist/pseudo-worker.polyfill.js"></script>
 ```
 
 Supported APIS
@@ -51,6 +50,7 @@ Supported APIS
 * `onmessage`
 * `onerror`
 * `addEventListener`
+* `removeEventListener`
 * `postMessage`
 
 **Note:** inside the worker, you _must_ use the `self` variable instead 
