@@ -20,12 +20,13 @@ function PseudoWorker(path) {
 
   var api = this;
 
-  // because IE8 support
-  function forEach(arr, fun) {
+  // custom each loop is for IE8 support
+  function executeEach(arr, fun) {
     var i = -1;
-    var len = arr.length;
-    while (++i < len) {
-      fun(arr[i]);
+    while (++i < arr.length) {
+      if (arr[i]) {
+        fun(arr[i]);
+      }
     }
   }
 
@@ -48,6 +49,26 @@ function PseudoWorker(path) {
     }
   }
 
+  function removeEventListener(type, fun) {
+      var listeners;
+      /* istanbul ignore else */
+      if (type === 'message') {
+        listeners = messageListeners;
+      } else if (type === 'error') {
+        listeners = errorListeners;
+      } else {
+        return;
+      }
+      var i = -1;
+      while (++i < listeners.length) {
+        var listener = listeners[i];
+        if (listener === fun) {
+          delete listeners[i];
+          break;
+        }
+      }
+  }
+
   function postError(err) {
     var callFun = callErrorListener(err);
     if (typeof api.onerror === 'function') {
@@ -56,8 +77,8 @@ function PseudoWorker(path) {
     if (workerSelf && typeof workerSelf.onerror === 'function') {
       callFun(workerSelf.onerror);
     }
-    forEach(errorListeners, callFun);
-    forEach(workerErrorListeners, callFun);
+    executeEach(errorListeners, callFun);
+    executeEach(workerErrorListeners, callFun);
   }
 
   function runPostMessage(msg) {
@@ -72,7 +93,7 @@ function PseudoWorker(path) {
     if (workerSelf && typeof workerSelf.onmessage === 'function') {
       callFun(workerSelf.onmessage);
     }
-    forEach(workerMessageListeners, callFun);
+    executeEach(workerMessageListeners, callFun);
   }
 
   function postMessage(msg) {
@@ -102,7 +123,7 @@ function PseudoWorker(path) {
     if (typeof api.onmessage === 'function') {
       callFun(api.onmessage);
     }
-    forEach(messageListeners, callFun);
+    executeEach(messageListeners, callFun);
   }
 
   function workerAddEventListener(type, fun) {
@@ -139,6 +160,7 @@ function PseudoWorker(path) {
 
   api.postMessage = postMessage;
   api.addEventListener = addEventListener;
+  api.removeEventListener = removeEventListener;
   api.terminate = terminate;
 
   return api;

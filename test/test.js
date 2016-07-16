@@ -14,7 +14,7 @@ var implementations = ['pseudo-worker'];
 if (process.browser) {
   var ua = uaParser(navigator.userAgent);
   if (ua.browser.name === 'Chrome' && ua.os.name !== 'Android') {
-    implementations.push('worker');
+    implementations.unshift('worker');
   }
 } else {
   // Shim for XHR in order to test in Node (nice for coverage reports)
@@ -149,6 +149,41 @@ each(implementations, function (workerType) {
       });
     });
 
+    it('emits multiple things and errors - with removeEventListener', function () {
+      var worker = createWorker('test/listener-style/echo-and-error-worker.js');
+      return new Promise(function (resolve, reject) {
+        var count = 0;
+        worker.addEventListener('message', function () {
+          count++;
+          if (count === 3) {
+            worker.postMessage({error: true});
+          }
+        });
+        var listener = function () {
+          count += 1000;
+        };
+        var listener2 = function () {
+          count += 1000;
+        };
+        worker.addEventListener('error', listener);
+        worker.addEventListener('error', function () {
+          if (count === 3) {
+            resolve();
+          } else {
+            reject();
+          }
+        });
+        worker.addEventListener('error', listener2);
+        worker.removeEventListener('error', listener);
+        worker.removeEventListener('error', listener2);
+        worker.postMessage({error: false});
+        worker.postMessage({error: false});
+        worker.postMessage({error: false});
+      }).then(function () {
+        worker.terminate();
+      });
+    });
+
     it('does nothing after termination', function () {
       var worker = createWorker('test/listener-style/echo-worker.js');
       return new Promise(function (resolve, reject) {
@@ -167,6 +202,228 @@ each(implementations, function (workerType) {
           reject(err);
         });
         worker.postMessage({});
+      });
+    });
+
+    it('removeEventListener - message 1', function () {
+      var worker = createWorker('test/listener-style/echo-worker.js');
+      var a = 0;
+      var b = 0;
+      var c = 0;
+      var d = 0;
+      return new Promise(function (resolve, reject) {
+        function listenerA() {
+          a++;
+        }
+        function listenerB() {
+          b++;
+          worker.removeEventListener('message', listenerA);
+        }
+        function listenerC() {
+          c++;
+          if (c === 2) {
+            worker.removeEventListener('message', listenerB);
+          }
+        }
+        function listenerD() {
+          d++;
+          if (d === 4) {
+            return resolve();
+          }
+          if (d === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+          post();
+        }
+        function post() {
+          setTimeout(function () {
+            worker.postMessage({});
+          }, 0);
+        }
+        worker.addEventListener('message', listenerA);
+        worker.addEventListener('message', listenerB);
+        worker.addEventListener('message', listenerC);
+        worker.addEventListener('message', listenerD);
+        worker.addEventListener('error', function (err) {
+          reject(err);
+        });
+        post();
+      }).then(function () {
+        assert.equal(a, 1);
+        assert.equal(b, 2);
+        assert.equal(c, 3);
+        assert.equal(d, 4);
+      });
+    });
+
+    it('removeEventListener - message 2', function () {
+      var worker = createWorker('test/listener-style/echo-worker.js');
+      var a = 0;
+      var b = 0;
+      var c = 0;
+      var d = 0;
+      return new Promise(function (resolve, reject) {
+        function listenerA() {
+          a++;
+        }
+        function listenerB() {
+          b++;
+          worker.removeEventListener('message', listenerA);
+        }
+        function listenerC() {
+          c++;
+          if (c === 2) {
+            worker.removeEventListener('message', listenerB);
+          }
+        }
+        function listenerD() {
+          d++;
+          if (d === 4) {
+            return resolve();
+          }
+          if (d === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+          post();
+        }
+        function post() {
+          setTimeout(function () {
+            worker.postMessage({});
+          }, 0);
+        }
+        worker.addEventListener('message', listenerC);
+        worker.addEventListener('message', listenerB);
+        worker.addEventListener('message', listenerD);
+        worker.addEventListener('message', listenerA);
+        worker.addEventListener('error', function (err) {
+          reject(err);
+        });
+        post();
+      }).then(function () {
+        assert.equal(a, 0);
+        assert.equal(b, 1);
+        assert.equal(c, 3);
+        assert.equal(d, 4);
+      });
+    });
+
+    it('removeEventListener - message 3', function () {
+      var worker = createWorker('test/listener-style/echo-worker.js');
+      var zero = 0;
+      var a = 0;
+      var b = 0;
+      var c = 0;
+      var d = 0;
+      return new Promise(function (resolve, reject) {
+        function listener0() {
+          zero++;
+          if (zero === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+        }
+        function listenerA() {
+          a++;
+        }
+        function listenerB() {
+          b++;
+          worker.removeEventListener('message', listenerA);
+        }
+        function listenerC() {
+          c++;
+          if (c === 2) {
+            worker.removeEventListener('message', listenerB);
+          }
+        }
+        function listenerD() {
+          d++;
+          if (d === 4) {
+            return resolve();
+          }
+          if (d === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+          post();
+        }
+        function post() {
+          setTimeout(function () {
+            worker.postMessage({});
+          }, 0);
+        }
+        worker.addEventListener('message', listener0);
+        worker.addEventListener('message', listenerD);
+        worker.addEventListener('message', listenerB);
+        worker.addEventListener('message', listenerC);
+        worker.addEventListener('message', listenerA);
+        worker.addEventListener('error', function (err) {
+          reject(err);
+        });
+        post();
+      }).then(function () {
+        assert.equal(zero, 4);
+        assert.equal(a, 0);
+        assert.equal(b, 2);
+        assert.equal(c, 2);
+        assert.equal(d, 4);
+      });
+    });
+
+    it('removeEventListener - message 4', function () {
+      var worker = createWorker('test/listener-style/echo-worker.js');
+      var zero = 0;
+      var a = 0;
+      var b = 0;
+      var c = 0;
+      var d = 0;
+      return new Promise(function (resolve, reject) {
+        function listener0() {
+          zero++;
+          if (zero === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+        }
+        function listenerA() {
+          a++;
+        }
+        function listenerB() {
+          b++;
+          worker.removeEventListener('message', listenerA);
+        }
+        function listenerC() {
+          c++;
+          if (c === 2) {
+            worker.removeEventListener('message', listenerB);
+          }
+        }
+        function listenerD() {
+          d++;
+          if (d === 4) {
+            return resolve();
+          }
+          if (d === 3) {
+            worker.removeEventListener('message', listenerC);
+          }
+          post();
+        }
+        function post() {
+          setTimeout(function () {
+            worker.postMessage({});
+          }, 0);
+        }
+        worker.addEventListener('message', listener0);
+        worker.addEventListener('message', listenerA);
+        worker.addEventListener('message', listenerD);
+        worker.addEventListener('message', listenerC);
+        worker.addEventListener('message', listenerB);
+        worker.addEventListener('error', function (err) {
+          reject(err);
+        });
+        post();
+      }).then(function () {
+        assert.equal(zero, 4);
+        assert.equal(a, 1);
+        assert.equal(b, 1);
+        assert.equal(c, 2);
+        assert.equal(d, 4);
       });
     });
 
