@@ -35,13 +35,13 @@ require('pseudo-worker/polyfill');
 Instead of Browserify/Webpack, you can also use it directly as a script tag:
 
 ```html
-<script src="https://npmcdn.com/pseudo-worker/dist/pseudo-worker.js"></script>
+<script src="https://unpkg.com/pseudo-worker/dist/pseudo-worker.js"></script>
 ```
 
 Then it's available as `window.PseudoWorker`. Or for the polyfill:
 
 ```html
-<script src="https://npmcdn.com/pseudo-worker/dist/pseudo-worker.polyfill.js"></script>
+<script src="https://unpkg.com/pseudo-worker/dist/pseudo-worker.polyfill.js"></script>
 ```
 
 Supported APIS
