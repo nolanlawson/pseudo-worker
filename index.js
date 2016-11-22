@@ -147,8 +147,10 @@ function PseudoWorker(path) {
           addEventListener: workerAddEventListener,
         };
         doEval(workerSelf, script);
-        while (postMessageListeners.length) {
-          runPostMessage(postMessageListeners.pop());
+        var currentListeners = postMessageListeners;
+        postMessageListeners = [];
+        for (var i = 0; i < currentListeners.length; i++) {
+          runPostMessage(currentListeners[i]);
         }
       } else {
         postError(new Error('cannot find script ' + path));

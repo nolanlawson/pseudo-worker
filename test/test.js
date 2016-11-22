@@ -504,6 +504,38 @@ each(implementations, function (workerType) {
         worker.terminate();
       });
     });
+
+    it('guarantee FIFO order', function () {
+      var worker = createWorker('test/listener-style/echo-all-in-order.js');
+      var messages = [];
+      return new Promise(function (resolve) {
+
+        var count = 0;
+
+        function checkDone() {
+          if (++count === 3) {
+            resolve();
+          }
+        }
+
+        worker.addEventListener('message', function (e) {
+          messages.push(e.data.messages);
+          checkDone();
+        });
+
+        worker.postMessage('a');
+        worker.postMessage('b');
+        worker.postMessage('c');
+      }).then(function () {
+        worker.terminate();
+      }).then(function () {
+        assert.deepEqual(messages, [
+          ['a'],
+          ['a', 'b'],
+          ['a', 'b', 'c']
+        ])
+      });
+    });
   });
 
   describe(workerType + ': onmessage style', function () {
@@ -703,6 +735,38 @@ each(implementations, function (workerType) {
         worker.postMessage({});
       }).then(function () {
         worker.terminate();
+      });
+    });
+
+    it('guarantee FIFO order', function () {
+      var worker = createWorker('test/onmessage-style/echo-all-in-order.js');
+      var messages = [];
+      return new Promise(function (resolve) {
+
+        var count = 0;
+
+        function checkDone() {
+          if (++count === 3) {
+            resolve();
+          }
+        }
+
+        worker.onmessage = function (e) {
+          messages.push(e.data.messages);
+          checkDone();
+        };
+
+        worker.postMessage('a');
+        worker.postMessage('b');
+        worker.postMessage('c');
+      }).then(function () {
+        worker.terminate();
+      }).then(function () {
+        assert.deepEqual(messages, [
+          ['a'],
+          ['a', 'b'],
+          ['a', 'b', 'c']
+        ])
       });
     });
 
