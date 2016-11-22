@@ -40,7 +40,7 @@ each(implementations, function (workerType) {
 
   describe(workerType + ': listener style', function () {
 
-    this.timeout(20000);
+    this.timeout(60000);
 
     function workerPromise(script, toSend) {
       return Promise.resolve().then(function () {
@@ -540,7 +540,7 @@ each(implementations, function (workerType) {
 
   describe(workerType + ': onmessage style', function () {
 
-    this.timeout(20000);
+    this.timeout(60000);
 
     function workerPromise(script, toSend) {
       return Promise.resolve().then(function () {
