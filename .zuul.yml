@@ -1,5 +1,5 @@
 ui: mocha-bdd
-concurrency: 3
+concurrency: 4
 tunnel:
   type: ngrok
 browsers:
