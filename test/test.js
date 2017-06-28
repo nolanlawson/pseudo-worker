@@ -205,6 +205,21 @@ each(implementations, function (workerType) {
       });
     });
 
+    it('does nothing after termination from inside worker', function () {
+      var worker = createWorker('test/listener-style/closed-worker.js');
+      return new Promise(function (resolve, reject) {
+        var count = 0;
+        worker.addEventListener('message', function () {
+          reject();
+        });
+        worker.addEventListener('error', function (err) {
+          reject(err);
+        });
+        worker.postMessage({});
+        setTimeout(resolve, 1000); // prove a negative
+      });
+    });
+
     it('removeEventListener - message 1', function () {
       var worker = createWorker('test/listener-style/echo-worker.js');
       var a = 0;
