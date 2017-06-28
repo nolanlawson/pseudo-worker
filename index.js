@@ -115,6 +115,9 @@ function PseudoWorker(path) {
   }
 
   function workerPostMessage(msg) {
+    if(terminated) {
+      return;
+    }
     function callFun(listener) {
       listener({
         data: msg
@@ -145,6 +148,7 @@ function PseudoWorker(path) {
         workerSelf = {
           postMessage: workerPostMessage,
           addEventListener: workerAddEventListener,
+          close: terminate
         };
         doEval(workerSelf, script);
         var currentListeners = postMessageListeners;
