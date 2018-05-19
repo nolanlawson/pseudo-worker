@@ -115,7 +115,7 @@ function PseudoWorker(path) {
   }
 
   function workerPostMessage(msg) {
-    if(terminated) {
+    if (terminated) {
       return;
     }
     function callFun(listener) {
