@@ -1,9 +1,8 @@
 'use strict';
 
+self.close();
 
 self.addEventListener('message', function () {
-  self.close();
-
   self.postMessage({
     hello: 'world'
   });

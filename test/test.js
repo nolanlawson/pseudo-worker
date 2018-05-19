@@ -208,7 +208,6 @@ each(implementations, function (workerType) {
     it('does nothing after termination from inside worker', function () {
       var worker = createWorker('test/listener-style/closed-worker.js');
       return new Promise(function (resolve, reject) {
-        var count = 0;
         worker.addEventListener('message', function () {
           reject();
         });
