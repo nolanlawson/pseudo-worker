@@ -51,6 +51,7 @@ Supported APIS
 * `addEventListener`
 * `removeEventListener`
 * `postMessage`
+* `close`
 
 **Note:** inside the worker, you _must_ use the `self` variable instead 
 of the implicit global object. I.e. do this:
