@@ -67,6 +67,17 @@ each(implementations, function (workerType) {
       });
     });
 
+    it('test blob URL', function () {
+      var blob = new Blob([
+          "'use strict';self.addEventListener('message', function () {  " +
+          "self.postMessage({    hello: 'world'  });});"
+      ], { type: 'application/javascript' });
+      var url = URL.createObjectURL(blob);
+      return workerPromise(url, {}).then(function (data) {
+        assert.equal(data.hello, 'world');
+      });
+    });
+
     it('test invalid script', function () {
       var workerScript = 'test/listener-style/404.js';
       return workerPromise(workerScript, {}).then(function () {
