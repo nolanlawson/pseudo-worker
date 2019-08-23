@@ -556,20 +556,25 @@ each(implementations, function (workerType) {
 
     this.timeout(60000);
 
-    function workerPromise(script, toSend) {
+    function workerPromise(script, toSend, toTransfer) {
       return Promise.resolve().then(function () {
         return createWorker(script);
       }).then(function (worker) {
         return new Promise(function (resolve, reject) {
-          worker.onmessage = function (e) {
-            resolve(e.data);
-            worker.terminate();
-          };
-          worker.onerror = function (e) {
-            reject(e);
-            worker.terminate();
-          };
-          worker.postMessage(toSend);
+          if (!toTransfer) {
+            worker.onmessage = function (e) {
+              resolve(e.data);
+              worker.terminate();
+            };
+            worker.onerror = function (e) {
+              reject(e);
+              worker.terminate();
+            };
+          }
+          worker.postMessage(toSend, toTransfer);
+          if (toTransfer) {
+            resolve(worker);
+          }
         });
       });
     }
@@ -578,6 +583,34 @@ each(implementations, function (workerType) {
       var workerScript = 'test/onmessage-style/basic-worker.js';
       return workerPromise(workerScript, {}).then(function (data) {
         assert.equal(data.hello, 'world');
+      });
+    });
+
+    it('handle transfer of messagechannel properly', function () {
+      return new Promise((resolve, reject) => {
+        let worker;
+        var workerScript = 'test/onmessage-style/echo-messagechannel.js';
+        var obj = {hello: {world: 'hi'}};
+        
+        // mock message channel
+        var messagechannel = {
+          port1: {
+            onmessage: (event) => {
+              try {
+                assert.deepEqual(event.data, obj);
+              } catch (error) {
+                return reject(error);
+              }
+              resolve();
+              worker.terminate();
+            }
+          },
+          port2: {
+            postMessage: (data) => messagechannel.port1.onmessage({data: data})
+          },
+        };
+
+        worker = workerPromise(workerScript, obj, [messagechannel.port2]);
       });
     });
 

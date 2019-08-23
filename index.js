@@ -81,22 +81,21 @@ function PseudoWorker(path) {
     executeEach(workerErrorListeners, callFun);
   }
 
-  function runPostMessage(msg) {
+  function runPostMessage(msg, transfer) {
     function callFun(listener) {
       try {
-        listener({data: msg});
+        listener({data: msg, ports: transfer});
       } catch (err) {
         postError(err);
       }
     }
-
     if (workerSelf && typeof workerSelf.onmessage === 'function') {
       callFun(workerSelf.onmessage);
     }
     executeEach(workerMessageListeners, callFun);
   }
 
-  function postMessage(msg) {
+  function postMessage(msg, transfer) {
     if (typeof msg === 'undefined') {
       throw new Error('postMessage() requires an argument');
     }
@@ -104,10 +103,10 @@ function PseudoWorker(path) {
       return;
     }
     if (!script) {
-      postMessageListeners.push(msg);
+      postMessageListeners.push({msg: msg, transfer: (transfer ? transfer : undefined)});
       return;
     }
-    runPostMessage(msg);
+    runPostMessage(msg, transfer);
   }
 
   function terminate() {
@@ -154,7 +153,7 @@ function PseudoWorker(path) {
         var currentListeners = postMessageListeners;
         postMessageListeners = [];
         for (var i = 0; i < currentListeners.length; i++) {
-          runPostMessage(currentListeners[i]);
+          runPostMessage(currentListeners[i].msg, currentListeners[i].transfer);
         }
       } else {
         postError(new Error('cannot find script ' + path));
