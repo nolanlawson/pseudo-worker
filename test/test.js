@@ -587,7 +587,7 @@ each(implementations, function (workerType) {
     });
 
     it('handle transfer of messagechannel properly', function () {
-      return new Promise(resolve => {
+      return new Promise((resolve, reject) => {
         let worker;
         var workerScript = 'test/onmessage-style/echo-messagechannel.js';
         var obj = {hello: {world: 'hi'}};
@@ -596,7 +596,11 @@ each(implementations, function (workerType) {
         var messagechannel = {
           port1: {
             onmessage: (event) => {
-              assert.deepEqual(event.data, obj);
+              try {
+                assert.deepEqual(event.data, {obj});
+              } catch (error) {
+                return reject(error);
+              }
               resolve();
               worker.terminate();
             }
@@ -605,7 +609,7 @@ each(implementations, function (workerType) {
             postMessage: (data) => messagechannel.port1.onmessage({data: data})
           },
         };
-        
+
         worker = workerPromise(workerScript, obj, [messagechannel.port2]);
       });
     });
