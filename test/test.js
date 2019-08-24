@@ -597,7 +597,7 @@ each(implementations, function (workerType) {
           port1: {
             onmessage: (event) => {
               try {
-                assert.deepEqual(event.data, {obj});
+                assert.deepEqual(event.data, obj);
               } catch (error) {
                 return reject(error);
               }
