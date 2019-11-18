@@ -587,30 +587,41 @@ each(implementations, function (workerType) {
     });
 
     it('handle transfer of messagechannel properly', function () {
-      return new Promise((resolve, reject) => {
-        let worker;
+      return new Promise(function (resolve, reject) {
         var workerScript = 'test/onmessage-style/echo-messagechannel.js';
         var obj = {hello: {world: 'hi'}};
-        
-        // mock message channel
-        var messagechannel = {
-          port1: {
-            onmessage: (event) => {
-              try {
-                assert.deepEqual(event.data, obj);
-              } catch (error) {
-                return reject(error);
-              }
-              resolve();
-              worker.terminate();
-            }
-          },
-          port2: {
-            postMessage: (data) => messagechannel.port1.onmessage({data: data})
-          },
-        };
+        var worker;
 
-        worker = workerPromise(workerScript, obj, [messagechannel.port2]);
+        function portOneOnMessage (event) {
+          try {
+            assert.deepEqual(event.data, obj);
+          } catch (error) {
+            return reject(error);
+          }
+          resolve(worker);
+        }
+
+        var messageChannel;
+        if (typeof MessageChannel === 'function') {
+          messageChannel = new MessageChannel();
+          messageChannel.port1.onmessage = portOneOnMessage;
+        } else {
+          // mock message channel
+          messageChannel = {
+            port1: {
+              onmessage: portOneOnMessage
+            },
+            port2: {
+              postMessage: function (data) {
+                messageChannel.port1.onmessage({data: data});
+              }
+            },
+          };
+        }
+
+        worker = workerPromise(workerScript, obj, [messageChannel.port2]);
+      }).then(function (worker) {
+        worker.terminate();
       });
     });
 
