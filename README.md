@@ -87,7 +87,7 @@ First:
 
     npm install
 
-Then to test in Node (using an XHR shim):
+Then to test in Node (using an fetch shim):
 
     npm test
     

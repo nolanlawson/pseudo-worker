@@ -1,5 +1,7 @@
 'use strict';
 
+var parseDataURL = require("data-urls");
+
 function doEval(self, __pseudoworker_script) {
   /* jshint unused:false */
   (function () {
@@ -8,7 +10,24 @@ function doEval(self, __pseudoworker_script) {
   }).call(global);
 }
 
-function PseudoWorker(path) {
+function fetchScript(url) {
+  if (/^\s*data:/.test(url)) {
+    return new Promise(function(resolve, reject) {
+      try {
+        resolve(parseDataURL(url).body.toString())
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  return fetch(url)
+    .then(function(response) {
+      return response.text()
+    })
+}
+
+function PseudoWorker(url) {
   var messageListeners = [];
   var errorListeners = [];
   var workerMessageListeners = [];
@@ -138,31 +157,24 @@ function PseudoWorker(path) {
     }
   }
 
-  var xhr = new XMLHttpRequest();
-
-  xhr.open('GET', path);
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState === 4) {
-      if (xhr.status >= 200 && xhr.status < 400) {
-        script = xhr.responseText;
-        workerSelf = {
-          postMessage: workerPostMessage,
-          addEventListener: workerAddEventListener,
-          close: terminate
-        };
-        doEval(workerSelf, script);
-        var currentListeners = postMessageListeners;
-        postMessageListeners = [];
-        for (var i = 0; i < currentListeners.length; i++) {
-          runPostMessage(currentListeners[i]);
-        }
-      } else {
-        postError(new Error('cannot find script ' + path));
+  fetchScript(url)
+    .then(function(text) {
+      script = text
+      workerSelf = {
+        postMessage: workerPostMessage,
+        addEventListener: workerAddEventListener,
+        close: terminate
+      };
+      doEval(workerSelf, script);
+      var currentListeners = postMessageListeners;
+      postMessageListeners = [];
+      for (var i = 0; i < currentListeners.length; i++) {
+        runPostMessage(currentListeners[i]);
       }
-    }
-  };
-
-  xhr.send();
+    })
+    .catch(function (error) {
+      postError(new Error('cannot fetch script: ' + url + ', error: ' + error));
+    })
 
   api.postMessage = postMessage;
   api.addEventListener = addEventListener;

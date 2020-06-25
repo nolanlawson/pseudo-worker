@@ -3,6 +3,7 @@
 var assert = require('assert');
 var Promise = require('pouchdb-promise');
 var uaParser = require('ua-parser-js');
+var { btoa } = require('abab');
 
 var PseudoWorker = require('../');
 
@@ -17,8 +18,8 @@ if (process.browser) {
     implementations.unshift('worker');
   }
 } else {
-  // Shim for XHR in order to test in Node (nice for coverage reports)
-  global.XMLHttpRequest = require('./xhr-shim');
+  // Shim for fetch in order to test in Node (nice for coverage reports)
+  global.fetch = require('./fetch-shim');
 }
 
 // because IE8 support
@@ -68,11 +69,9 @@ each(implementations, function (workerType) {
     });
 
     it('test blob URL', function () {
-      var blob = new Blob([
-          "'use strict';self.addEventListener('message', function () {  " +
-          "self.postMessage({    hello: 'world'  });});"
-      ], { type: 'application/javascript' });
-      var url = URL.createObjectURL(blob);
+      var data = "'use strict';self.addEventListener('message', function () {  " +
+          "self.postMessage({    hello: 'world'  });});";
+      var url = 'data:application/javascript;base64,' + btoa(data);
       return workerPromise(url, {}).then(function (data) {
         assert.equal(data.hello, 'world');
       });
