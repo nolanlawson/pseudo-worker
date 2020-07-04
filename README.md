@@ -1,4 +1,4 @@
-pseudo-worker [![Build Status](https://travis-ci.org/nolanlawson/pseudo-worker.svg?branch=master)](https://travis-ci.org/nolanlawson/pseudo-worker) [![Coverage Status](https://coveralls.io/repos/nolanlawson/pseudo-worker/badge.svg?branch=master&service=github)](https://coveralls.io/github/nolanlawson/pseudo-worker?branch=master)
+pseudo-worker [![Build Status](https://travis-ci.com/nolanlawson/pseudo-worker.svg?branch=master)](https://travis-ci.com/nolanlawson/pseudo-worker) [![Coverage Status](https://coveralls.io/repos/nolanlawson/pseudo-worker/badge.svg?branch=master&service=github)](https://coveralls.io/github/nolanlawson/pseudo-worker?branch=master)
 ====
 
 A tiny and mostly spec-compliant [WebWorker](https://www.w3.org/TR/workers/) polyfill, 
